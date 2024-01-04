@@ -79,13 +79,26 @@ impl Card {
 }
 
 pub fn day_4_part_2() {
-    let lines: Vec<&str> = include_str!("../../data/day4.txt").lines().collect();
+    let lines: Vec<&str> = include_str!("../../data/day4.txt")
+        .lines()
+        .collect();
 
     let mut cards: Vec<Card> = lines.iter()
         .map(|line| {
-            let parts: Vec<&str> = line.splitn(2, '|').collect();
-            let nums: Vec<u32> = parts[0].split_whitespace().skip(2).map(|n| n.parse().unwrap()).collect();
-            let wins: Vec<u32> = parts[1].split_whitespace().map(|n| n.parse().unwrap()).collect();
+            let parts: Vec<&str> =
+                line.splitn(2, '|')
+                    .collect();
+
+            let nums: Vec<u32> =
+                parts[0].split_whitespace()
+                    .skip(2)
+                    .map(|n| n.parse().unwrap())
+                    .collect();
+
+            let wins: Vec<u32> =
+                parts[1].split_whitespace()
+                    .map(|n| n.parse().unwrap())
+                    .collect();
 
             Card::new(nums, wins)
         })
