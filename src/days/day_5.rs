@@ -113,3 +113,80 @@ pub(crate) fn day_5_part_1() {
 
     println!("Lowest final location: {:#?}", final_locations.iter().min().unwrap());
 }
+
+// The below solution for part 2 takes wayyyyy to much time to compute the real input (never saw the output actually)
+// It works fine with the example input but i have to find a new approach for computing the real input
+
+use std::collections::{BTreeMap, HashMap};
+
+struct ConversionMap {
+    ranges: BTreeMap<u64, (u64, u64)>,
+}
+
+impl ConversionMap {
+    fn new(lines: &[&str]) -> Self {
+        let mut ranges = BTreeMap::new();
+        for line in lines {
+            let nums: Vec<u64> = line.split_whitespace()
+                .filter_map(|s| s.parse().ok())
+                .collect();
+            if nums.len() == 3 {
+                let (start, end, length) = (nums[1], nums[0], nums[2]);
+                ranges.insert(start, (end, end + length));
+            }
+        }
+        ConversionMap { ranges }
+    }
+
+    fn convert_range(&self, values: &[u64]) -> Vec<u64> {
+        values.iter().map(|&value| self.convert(value)).collect()
+    }
+
+    fn convert(&self, value: u64) -> u64 {
+        if let Some((&start, &(end, range_end))) = self.ranges.range(..=value).next_back() {
+            if value < start + (range_end - end) {
+                return end + (value - start);
+            }
+        }
+        value
+    }
+}
+
+fn precalculate_conversions(seeds: &[(u64, u64)], maps: &[ConversionMap]) -> HashMap<u64, u64> {
+    let mut conversions = HashMap::new();
+    for &(start, length) in seeds {
+        let mut current_values: Vec<u64> = (start..start + length).collect();
+        for map in maps {
+            current_values = map.convert_range(&current_values);
+        }
+        for &value in &current_values {
+            conversions.entry(value).or_insert(value);
+        }
+    }
+    conversions
+}
+
+pub fn day_5_part_2() {
+    let lines: Vec<&str> = include_str!("../../data/day5.txt")
+        .lines()
+        .collect();
+
+    let seeds_ranges: Vec<(u64, u64)> = lines[0].split(':').last().unwrap()
+        .split_whitespace()
+        .filter_map(|s| s.parse().ok())
+        .collect::<Vec<u64>>()
+        .chunks(2)
+        .map(|slice| (slice[0], slice[1]))
+        .collect();
+
+    let conversion_maps: Vec<ConversionMap> = lines.split(|line| line.is_empty())
+        .skip(1)
+        .map(ConversionMap::new)
+        .collect();
+
+    let conversions = precalculate_conversions(&seeds_ranges, &conversion_maps);
+    let lowest_location = *conversions.values().min().unwrap_or(&u64::MAX);
+
+    println!("Lowest final location: {}", lowest_location);
+}
+
