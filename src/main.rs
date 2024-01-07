@@ -11,6 +11,9 @@ use days::day_4::day_4_part_1;
 use days::day_4::day_4_part_2;
 use days::day_5::day_5_part_1;
 use days::day_5::day_5_part_2;*/
+use days::day_6::day_6_part1;
+use days::day_6::day_6_part2;
+
 
 pub fn main() {
     /*println!("Day 1");
@@ -44,5 +47,12 @@ pub fn main() {
     day_5_part_1();
     print!("Part 2 -> ");
     day_5_part_2();*/
+
+    println!("Day 6");
+    print!("Part 1 -> ");
+    day_6_part1();
+    print!("Part 2 -> ");
+    day_6_part2();
+
 
 }
